@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theatre Corner — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --border: #2a2d35;
+    --accent: #c9a84c;
+    --accent2: #e8c97a;
+    --text: #f0ede8;
+    --text2: #9b9a96;
+    --text3: #5c5b58;
+    --danger: #e05252;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .login-wrap {
+    width: 360px;
+    padding: 20px;
+  }
+  .brand {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .brand h1 {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    color: var(--accent2);
+  }
+  .brand span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+  }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .form-group { margin-bottom: 16px; }
+  input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--text3); }
+  button {
+    width: 100%;
+    padding: 11px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: #1a1500;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s;
+  }
+  button:hover { background: var(--accent2); }
+  .error {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 12px;
+    text-align: center;
+    min-height: 18px;
+  }
+  .warning-box {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--accent2);
+    text-align: center;
+    line-height: 1.5;
+  }
+  .lockout-box {
+    background: rgba(224,82,82,0.08);
+    border: 1px solid rgba(224,82,82,0.35);
+    border-radius: 6px;
+    padding: 14px;
+    margin-top: 12px;
+    text-align: center;
+  }
+  .lockout-box .lockout-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--danger);
+    margin-bottom: 6px;
+  }
+  .lockout-box .lockout-countdown {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .lockout-box .lockout-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="brand">
+    <h1>Theatre Corner</h1>
+    <span>Management System</span>
+  </div>
+  <div class="card">
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" id="name" placeholder="Enter username" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" id="password" placeholder="Enter password"
+             onkeydown="if(event.key==='Enter') login()" />
+    </div>
+    <button onclick="login()" id="login-btn">Sign In</button>
+    <div class="error" id="error"></div>
+    <div class="warning-box" id="warning-box" style="display:none;"></div>
+    <div class="lockout-box" id="lockout-box" style="display:none;">
+      <div class="lockout-title">🔒 Account Temporarily Locked</div>
+      <div class="lockout-countdown" id="lockout-countdown">—</div>
+      <div class="lockout-sub">Too many failed attempts. Please wait.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = '/api';
+let countdownInterval = null;
+
+function showError(msg) {
+  document.getElementById('error').textContent = msg;
+  document.getElementById('warning-box').style.display = 'none';
+}
+
+function showWarning(msg) {
+  document.getElementById('error').textContent = '';
+  const wb = document.getElementById('warning-box');
+  wb.style.display = 'block';
+  wb.textContent = msg;
+}
+
+function showLockout(remainingSeconds) {
+  document.getElementById('error').textContent = '';
+  document.getElementById('warning-box').style.display = 'none';
+  document.getElementById('lockout-box').style.display = 'block';
+  document.getElementById('login-btn').disabled = true;
+  document.getElementById('name').disabled = true;
+  document.getElementById('password').disabled = true;
+
+  let seconds = remainingSeconds;
+
+  function tick() {
+    if (seconds <= 0) {
+      clearInterval(countdownInterval);
+      document.getElementById('lockout-box').style.display = 'none';
+      document.getElementById('login-btn').disabled = false;
+      document.getElementById('name').disabled = false;
+      document.getElementById('password').disabled = false;
+      document.getElementById('password').value = '';
+      document.getElementById('error').textContent = '';
+      return;
+    }
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    const display = h > 0
+      ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    document.getElementById('lockout-countdown').textContent = display;
+    seconds--;
+  }
+
+  tick();
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(tick, 1000);
+}
+
+async function login() {
+  const name     = document.getElementById('name').value.trim();
+  const password = document.getElementById('password').value;
+
+  showError('');
+  document.getElementById('warning-box').style.display = 'none';
+
+  if (!name || !password) {
+    showError('Please enter username and password');
+    return;
+  }
+
+  try {
+    const res = await fetch(API_BASE + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, password })
+    });
+    const data = await res.json();
+
+    if (res.status === 429) {
+      // Locked out
+      showLockout(data.remaining || 300);
+      return;
+    }
+
+    if (!res.ok) {
+      document.getElementById('password').value = '';
+      if (data.warning) {
+        showError(data.message);
+        showWarning(data.warning);
+      } else {
+        showError(data.message || 'Invalid credentials.');
+      }
+      return;
+    }
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('role',  data.role);
+    localStorage.setItem('username', name);
+    window.location.href = 'index.html';
+  } catch (err) {
+    showError('Could not connect to server.');
+  }
+}
+</script>
+</body>
+</html>
