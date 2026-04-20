@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/server.js"
     },
     {
       "src": "/",
@@ -11,12 +11,6 @@
     {
       "src": "/(.*)",
       "dest": "/$1"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/purge",
-      "schedule": "0 0 * * *"
     }
   ]
 }
