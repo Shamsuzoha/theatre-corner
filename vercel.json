@@ -1,29 +1,14 @@
 {
   "outputDirectory": "public",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index"
-    }
+    { "source": "/api/(.*)", "destination": "/api/index" }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index"
-    },
-    {
-      "src": "/",
-      "dest": "/login.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+    { "src": "/api/(.*)", "dest": "/api/index" },
+    { "src": "/",         "dest": "/login.html" },
+    { "src": "/(.*)",     "dest": "/$1" }
   ],
   "crons": [
-    {
-      "path": "/api/purge",
-      "schedule": "0 0 * * *"
-    }
+    { "path": "/api/purge", "schedule": "0 0 * * *" }
   ]
 }
