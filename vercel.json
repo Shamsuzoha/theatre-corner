@@ -1,4 +1,5 @@
 {
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -7,20 +8,16 @@
   ],
   "routes": [
     {
-      "src": "/",
-      "dest": "/public/login.html"
-    },
-    {
-      "src": "/index.html",
-      "dest": "/public/index.html"
-    },
-    {
-      "src": "/login.html",
-      "dest": "/public/login.html"
-    },
-    {
       "src": "/api/(.*)",
       "dest": "/api/index"
+    },
+    {
+      "src": "/",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ],
   "crons": [
