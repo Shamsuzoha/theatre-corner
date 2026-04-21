@@ -27,6 +27,31 @@ const db = async (sql, params = []) => {
   return rows;
 };
 
+// ── DEBUG (remove after confirming connection works) ──
+app.get('/api/debug', async (req, res) => {
+  try {
+    await pool.execute('SELECT 1');
+    res.json({
+      status: 'connected',
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      pass_set: !!process.env.DB_PASS
+    });
+  } catch (e) {
+    res.status(500).json({
+      status: 'failed',
+      error: e.message,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      pass_set: !!process.env.DB_PASS
+    });
+  }
+});
+
 // ── AUTH MIDDLEWARE ────────────────────────────────
 function auth(requiredRole = null) {
   return (req, res, next) => {
