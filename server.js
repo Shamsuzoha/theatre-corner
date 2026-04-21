@@ -15,11 +15,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret123';
 // ── DB ─────────────────────────────────────────────
 const pool = mysql.createPool({
   host:     process.env.DB_HOST,
-  port:     parseInt(process.env.DB_PORT) || 27813,
+  port:     parseInt(process.env.DB_PORT) || 3306,
   user:     process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  ssl: { rejectUnauthorized: false } // required for most hosted MySQL providers
+  ssl: { rejectUnauthorized: false }
 });
 
 const db = async (sql, params = []) => {
