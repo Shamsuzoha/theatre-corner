@@ -184,8 +184,100 @@
   .bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; }
   .bar-val { font-size: 12px; font-family: var(--font-mono); color: var(--text3); width: 48px; text-align: right; flex-shrink: 0; }
 
-  @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .stats-grid-wide { grid-template-columns: repeat(2,1fr); } .charts-grid { grid-template-columns: 1fr; } }
-  @media (max-width: 640px) { .sidebar { transform: translateX(-100%); } .main { margin-left: 0; } .stats-grid { grid-template-columns: 1fr; } .stats-grid-wide { grid-template-columns: 1fr; } }
+  /* HAMBURGER BUTTON */
+  .hamburger { display: none; background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 9px; cursor: pointer; color: var(--text2); font-size: 18px; line-height: 1; transition: all 0.15s; flex-shrink: 0; }
+  .hamburger:hover { background: var(--surface2); color: var(--text); }
+
+  /* SIDEBAR OVERLAY (mobile) */
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(2px); opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+  .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+
+  /* BOTTOM NAV (mobile) */
+  .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); z-index: 80; padding: 6px 0 env(safe-area-inset-bottom, 6px); }
+  .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+  .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text3); transition: color 0.15s; min-width: 48px; border: none; background: none; font-family: var(--font-sans); }
+  .bottom-nav-item.active { color: var(--accent2); }
+  .bottom-nav-item .bn-icon { font-size: 18px; line-height: 1; }
+  .bottom-nav-item .bn-label { font-size: 9px; letter-spacing: 0.04em; font-family: var(--font-mono); text-transform: uppercase; white-space: nowrap; }
+  .bottom-nav-more { position: relative; }
+
+  /* MOBILE TOPBAR */
+  .topbar-title-wrap { display: flex; align-items: center; gap: 10px; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .stats-grid-wide { grid-template-columns: repeat(2,1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .content { padding: 20px 20px; }
+  }
+
+  @media (max-width: 640px) {
+    /* Layout */
+    .sidebar { transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); z-index: 95; }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay { display: block; }
+    .main { margin-left: 0; padding-bottom: 72px; }
+
+    /* Hamburger */
+    .hamburger { display: flex; align-items: center; justify-content: center; }
+
+    /* Bottom nav */
+    .bottom-nav { display: block; }
+
+    /* Topbar */
+    .topbar { padding: 12px 16px; }
+    .topbar h2 { font-size: 17px; }
+    .topbar-actions { gap: 6px; }
+    .topbar-actions .btn { padding: 6px 10px; font-size: 12px; }
+    /* hide clock on mobile topbar */
+    #live-clock { display: none; }
+
+    /* Content */
+    .content { padding: 14px 12px; }
+
+    /* Stats */
+    .stats-grid { grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 12px; }
+    .stats-grid-wide { grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 12px; }
+    .stat-card { padding: 14px; }
+    .stat-value { font-size: 20px; }
+
+    /* Period bar */
+    .period-bar { flex-wrap: wrap; gap: 6px; }
+
+    /* Tables — horizontal scroll */
+    .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 520px; }
+    .table-toolbar { padding: 10px 12px; gap: 8px; }
+    .search-input { max-width: 100%; }
+    thead th { padding: 9px 12px; font-size: 10px; }
+    td { padding: 9px 12px; font-size: 12px; }
+    .td-actions { gap: 4px; flex-wrap: wrap; }
+
+    /* Modal */
+    .modal-overlay { align-items: flex-end; }
+    .modal { border-radius: 18px 18px 0 0; max-width: 100%; max-height: 88vh; margin: 0; padding: 22px 20px 32px; }
+    .form-row { grid-template-columns: 1fr; gap: 0; }
+
+    /* Toast */
+    .toast-container { bottom: 80px; right: 12px; left: 12px; }
+    .toast { min-width: 0; width: 100%; }
+
+    /* Charts */
+    .charts-grid { grid-template-columns: 1fr; gap: 12px; }
+    .chart-card { padding: 14px; }
+
+    /* Vendor blocks */
+    .vendor-block-header { padding: 12px 14px; gap: 10px; }
+    .vendor-meta { gap: 12px; }
+
+    /* Prevent iOS auto-zoom on inputs */
+    input, select, textarea, .form-input, .form-select, .search-input { font-size: 16px !important; }
+  }
+
+  @media (max-width: 400px) {
+    .stats-grid, .stats-grid-wide { grid-template-columns: 1fr; }
+    .topbar-actions .btn-undo { display: none; } /* declutter on very small screens */
+  }
 </style>
 </head>
 <body>
@@ -241,7 +333,10 @@
   <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="topbar">
-      <h2>Dashboard</h2>
+      <div class="topbar-title-wrap">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <h2>Dashboard</h2>
+      </div>
       <div class="topbar-actions">
         <button class="btn btn-undo" id="undo-btn-dashboard" onclick="undoLastAction()" title="Undo last action (up to 5)">↩ Undo</button>
         <span style="font-size:12px;color:var(--text3);font-family:var(--font-mono);" id="live-clock">—</span>
@@ -327,7 +422,10 @@
   <!-- VENDORS -->
   <div class="page" id="page-vendors">
     <div class="topbar">
-      <h2>Vendors</h2>
+      <div class="topbar-title-wrap">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <h2>Vendors</h2>
+      </div>
       <div class="topbar-actions">
         <button class="btn btn-undo" onclick="undoLastAction()" title="Undo last action">↩ Undo</button>
         <button class="btn btn-primary" onclick="openModal('vendor')">+ Add Vendor</button>
@@ -352,7 +450,10 @@
   <!-- ITEMS -->
   <div class="page" id="page-items">
     <div class="topbar">
-      <h2>Items</h2>
+      <div class="topbar-title-wrap">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <h2>Items</h2>
+      </div>
       <div class="topbar-actions">
         <button class="btn btn-undo" onclick="undoLastAction()" title="Undo last action">↩ Undo</button>
         <button class="btn btn-primary" onclick="openModal('item')">+ Add Item</button>
@@ -377,7 +478,10 @@
   <!-- CUSTOMERS -->
   <div class="page" id="page-customers">
     <div class="topbar">
-      <h2>Customers</h2>
+      <div class="topbar-title-wrap">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <h2>Customers</h2>
+      </div>
       <div class="topbar-actions">
         <button class="btn btn-undo" onclick="undoLastAction()" title="Undo last action">↩ Undo</button>
         <button class="btn btn-primary" onclick="openModal('customer')">+ Add Customer</button>
@@ -402,7 +506,10 @@
   <!-- ORDERS -->
   <div class="page" id="page-orders">
     <div class="topbar">
-      <h2>Orders</h2>
+      <div class="topbar-title-wrap">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <h2>Orders</h2>
+      </div>
       <div class="topbar-actions">
         <button class="btn btn-undo" onclick="undoLastAction()" title="Undo last action">↩ Undo</button>
         <button class="btn btn-primary" onclick="openModal('order')">+ New Order</button>
@@ -428,7 +535,10 @@
   <!-- VENDOR ORDERS -->
   <div class="page" id="page-vendor-orders">
     <div class="topbar">
-      <h2>Vendor Orders</h2>
+      <div class="topbar-title-wrap">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <h2>Vendor Orders</h2>
+      </div>
       <div class="topbar-actions">
         <button class="btn" onclick="loadVendorOrders()">↻ Refresh</button>
       </div>
@@ -443,7 +553,10 @@
   <!-- EDIT HISTORY (admin only) -->
   <div class="page" id="page-history">
     <div class="topbar">
-      <h2>Edit History</h2>
+      <div class="topbar-title-wrap">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <h2>Edit History</h2>
+      </div>
       <div class="topbar-actions">
         <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear All</button>
       </div>
@@ -493,6 +606,30 @@
 
 <!-- TOAST -->
 <div class="toast-container" id="toast-container"></div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bottom-nav-item active" id="bn-dashboard" onclick="navigate('dashboard');setBottomNav('dashboard')">
+      <span class="bn-icon">◈</span><span class="bn-label">Home</span>
+    </button>
+    <button class="bottom-nav-item" id="bn-items" onclick="navigate('items');setBottomNav('items')">
+      <span class="bn-icon">▣</span><span class="bn-label">Items</span>
+    </button>
+    <button class="bottom-nav-item" id="bn-orders" onclick="navigate('orders');setBottomNav('orders')">
+      <span class="bn-icon">◆</span><span class="bn-label">Orders</span>
+    </button>
+    <button class="bottom-nav-item" id="bn-customers" onclick="navigate('customers');setBottomNav('customers')">
+      <span class="bn-icon">◉</span><span class="bn-label">Customers</span>
+    </button>
+    <button class="bottom-nav-item" id="bn-more" onclick="toggleSidebar()">
+      <span class="bn-icon">☰</span><span class="bn-label">More</span>
+    </button>
+  </div>
+</nav>
 
 <script>
 // ── AUTH GUARD ──────────────────────────────────────
@@ -547,8 +684,39 @@ function navigate(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.getElementById('nav-' + page).classList.add('active');
+  setBottomNav(page);
   if (page === 'vendor-orders') loadVendorOrders();
   if (page === 'history') renderHistory();
+  closeSidebar();
+  window.scrollTo(0, 0);
+}
+
+// ── MOBILE SIDEBAR ──────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const isOpen  = sidebar.classList.contains('open');
+  if (isOpen) { closeSidebar(); } else { openSidebar(); }
+}
+
+function openSidebar() {
+  document.querySelector('.sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── BOTTOM NAV SYNC ─────────────────────────────────
+const bnPages = ['dashboard','items','orders','customers'];
+function setBottomNav(page) {
+  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('bn-' + page);
+  if (el) el.classList.add('active');
 }
 
 // ── STATE ────────────────────────────────────────────
